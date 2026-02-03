@@ -1,15 +1,21 @@
-FROM python:3.10-slim
+# Use official Python image
+FROM --platform=linux/amd64 python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
+# Copy requirements and install dependencies
 COPY requirements.txt .
-RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy app folder
+COPY ./app ./app
 
-COPY app/ app/
+# Copy model folder
+COPY ./model ./model
 
-COPY model/ model/
+# Expose port
+EXPOSE 8000
 
-EXPOSE 8080
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the FastAPI app
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
